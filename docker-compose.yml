@@ -7,6 +7,7 @@ services:
     ports:
       - 8080:8080
       - 8081:8081
+      - 8082:8082
     depends_on:
       - web
       - api
@@ -30,3 +31,23 @@ services:
       context: api/docker/development/php-fpm
     volumes:
       - ./api:/app
+
+  api-php-cli:
+    build:
+      context: api/docker/development/php-cli
+    volumes:
+      - ./api:/app
+
+  postgres:
+    image: postgres:12.2-alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: app
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - 54321:5432
+
+volumes:
+  pg-data:
