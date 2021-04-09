@@ -1,0 +1,60 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    _instanceof:
+        App\Shared\Domain\Bus\Command\CommandHandler:
+            tags: ['app.command_handler']
+
+        App\Shared\Domain\Bus\Query\QueryHandler:
+            tags: ['app.query_handler']
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Apps\External\Pub\Controller\:
+        resource: '../apps/external/public/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Apps\External\Backoffice\Controller\:
+        resource: '../apps/external/backoffice/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Apps\External\Pub\Command\:
+        resource: '../apps/external/public/Command/'
+        tags: ['console_commands']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\Shared\Infrastructure\Symfony\AddJsonBodyToRequestListener:
+        tags:
+            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
+
+    App\Shared\Infrastructure\Symfony\JwtAuthMiddleware:
+        tags:
+            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
+
+    App\Shared\Infrastructure\Bus\Command\InMemorySymfonyCommandBus:
+        arguments: [!tagged app.command_handler]
+
+    App\Shared\Infrastructure\Bus\Query\InMemorySymfonyQueryBus:
+        arguments: [!tagged app.query_handler]
+
+    App\Auth\Application\Token\TokenCreator:
+        arguments:
+            - '@lexik_jwt_authentication.encoder'
+            - '%env(resolve:JWT_TIME_EXPIRED)%'

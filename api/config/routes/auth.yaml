@@ -1,0 +1,9 @@
+authenticate:
+  path: /api/v1/auth/login
+  controller: App\Apps\External\Pub\Controller\Auth\LoginController
+  methods: [POST]
+
+me:
+  path: /api/v1/auth/me
+  controller: App\Apps\External\Pub\Controller\Auth\MeController
+  methods: [GET]
