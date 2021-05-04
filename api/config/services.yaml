@@ -42,14 +42,18 @@ services:
 
     App\Shared\Infrastructure\Symfony\AddJsonBodyToRequestListener:
         tags:
-            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    App\Shared\Infrastructure\Symfony\ApiExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onException }
 
     App\Shared\Infrastructure\Symfony\JwtAuthMiddleware:
         tags:
             - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
 
     App\Shared\Infrastructure\Bus\Command\InMemorySymfonyCommandBus:
-        arguments: [!tagged app.command_handler]
+        arguments: [!tagged app.command_handler, '@validator']
 
     App\Shared\Infrastructure\Bus\Query\InMemorySymfonyQueryBus:
         arguments: [!tagged app.query_handler]

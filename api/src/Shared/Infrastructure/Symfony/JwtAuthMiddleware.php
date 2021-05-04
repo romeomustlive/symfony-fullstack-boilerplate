@@ -8,7 +8,10 @@ use App\Auth\Application\Authorize\AuthorizeCommand;
 use App\Auth\Domain\InvalidToken;
 use App\Shared\Domain\Bus\Command\CommandBus;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 final class JwtAuthMiddleware
@@ -32,32 +35,42 @@ final class JwtAuthMiddleware
                 'Authorization'
             );
             $token = $extractor->extract($event->getRequest());
+            $this->ensureTokenExist($token, $event);
 
-            $this->ensureTokenExist($token);
-            $this->authenticate($token, $event);
+            try {
+                $username = $this->encoder->decode($token)['username'];
+                $this->authenticate($username, $event);
+            } catch (JWTDecodeFailureException $e) {
+                $this->setAuthorizationFailedResponse($event);
+            }
         }
     }
 
-    private function ensureTokenExist(string $token): void
+    private function ensureTokenExist(string $token, RequestEvent $event): void
     {
         if (null === $token) {
-            throw new InvalidToken();
+            $this->setForbiddenResponse($event);
         }
     }
 
-    private function authenticate(string $token, RequestEvent $event): void
+    private function authenticate(string $username, RequestEvent $event): void
     {
-        $username = $this->encoder->decode($token)['username'];
-
-        $this->commandBus->dispatch(
-            new AuthorizeCommand($username)
-        );
-
-        $this->addUserDataToRequest($username, $event);
+        try {
+            $this->commandBus->dispatch(
+                new AuthorizeCommand($username)
+            );
+        } catch (InvalidToken $e) {
+            $this->setForbiddenResponse($event);
+        }
     }
 
-    private function addUserDataToRequest(string $username, RequestEvent $event): void
+    private function setAuthorizationFailedResponse(RequestEvent $event)
     {
-        $event->getRequest()->attributes->set('authenticated_username', $username);
+        $event->setResponse(
+            new JsonResponse(
+                ['error' => 'Invalid or expired token'],
+                Response::HTTP_UNAUTHORIZED
+            )
+        );
     }
 }
