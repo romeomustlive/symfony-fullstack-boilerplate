@@ -9,7 +9,7 @@ use App\Sport\Exercise\Application\Find\ExerciseResponse;
 use App\Sport\Exercise\Application\Find\FindExerciseQuery;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-final class ExerciseGetController extends ApiController
+final class ExerciseFindController extends ApiController
 {
     public function __invoke(string $id): JsonResponse
     {

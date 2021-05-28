@@ -30,6 +30,6 @@ final class CreateResultCommandHandler implements CommandHandler
         $exercise = new ExerciseId($command->exerciseId());
         $createdAt = new DateTimeImmutable();
 
-        $this->creator->create($id, $weight, $count, $userId, $exerciseId, $createdAt);
+        $this->creator->create($id, $weight, $count, $userId, $createdAt, $exercise);
     }
 }

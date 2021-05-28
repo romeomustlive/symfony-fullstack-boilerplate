@@ -6,7 +6,7 @@ namespace App\Sport\Result\Application\SearchByCriteria;
 
 use App\Shared\Domain\Bus\Query\Query;
 
-final class SearchResultByCriteriaQuery implements Query
+final class SearchResultsByCriteriaQuery implements Query
 {
     private ?string $userId;
     private ?string $title;

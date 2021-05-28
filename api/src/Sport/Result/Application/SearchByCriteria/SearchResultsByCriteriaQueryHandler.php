@@ -14,7 +14,7 @@ use App\Sport\Result\Application\ResultsResponse;
 use App\Sport\Result\Domain\Result;
 use function Lambdish\Phunctional\map;
 
-final class SearchResultByCriteriaQueryHandler implements QueryHandler
+final class SearchResultsByCriteriaQueryHandler implements QueryHandler
 {
     private ResultsByCriteriaSearcher $searcher;
 
@@ -23,7 +23,7 @@ final class SearchResultByCriteriaQueryHandler implements QueryHandler
         $this->searcher = $searcher;
     }
 
-    public function __invoke(SearchResultByCriteriaQuery $query): Response
+    public function __invoke(SearchResultsByCriteriaQuery $query): Response
     {
         $filterValues = $this->extractFilterValuesFromQuery($query);
 
@@ -46,7 +46,7 @@ final class SearchResultByCriteriaQueryHandler implements QueryHandler
         );
     }
 
-    private function extractFilterValuesFromQuery(SearchResultByCriteriaQuery $query): array
+    private function extractFilterValuesFromQuery(SearchResultsByCriteriaQuery $query): array
     {
         $filterValues = [];
 

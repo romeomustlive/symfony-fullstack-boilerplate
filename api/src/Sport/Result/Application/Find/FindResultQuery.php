@@ -4,7 +4,9 @@
 namespace App\Sport\Result\Application\Find;
 
 
-final class FindResultQuery
+use App\Shared\Domain\Bus\Query\Query;
+
+final class FindResultQuery implements Query
 {
     private ?string $id;
 

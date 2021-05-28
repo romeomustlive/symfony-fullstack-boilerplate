@@ -6,13 +6,13 @@ exercise_create:
 
 exercise_get:
   path: /api/v1/sport/exercises/{id}
-  controller: App\Apps\External\Pub\Controller\Sport\Exercise\ExerciseGetController
+  controller: App\Apps\External\Pub\Controller\Sport\Exercise\ExerciseFindController
   defaults: { auth: true }
   methods: [GET]
 
 exercises_get:
   path: /api/v1/sport/exercises
-  controller: App\Apps\External\Pub\Controller\Sport\Exercise\ExercisesGetController
+  controller: App\Apps\External\Pub\Controller\Sport\Exercise\ExercisesGetByCriteriaController
   defaults: { auth: true }
   methods: [ GET ]
 
@@ -27,3 +27,27 @@ exercise_delete:
   controller: App\Apps\External\Pub\Controller\Sport\Exercise\ExerciseDeleteController
   defaults: { auth: true }
   methods: [DELETE]
+
+result_create:
+  path: /api/v1/sport/results
+  controller: App\Apps\External\Pub\Controller\Sport\Result\ResultCreateController
+  defaults: { auth: true }
+  methods: [POST]
+
+result_update:
+  path: /api/v1/sport/results/{id}
+  controller: App\Apps\External\Pub\Controller\Sport\Result\ResultUpdateController
+  defaults: { auth: true }
+  methods: [PUT]
+
+results_get:
+  path: /api/v1/sport/results
+  controller: App\Apps\External\Pub\Controller\Sport\Result\ResultsGetByCriteriaController
+  defaults: { auth: true }
+  methods: [GET]
+
+result_get:
+  path: /api/v1/sport/results/{id}
+  controller: App\Apps\External\Pub\Controller\Sport\Result\ResultFindController
+  defaults: { auth: true },
+  methods: [GET]
